@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 // Test API route to verify R2 connection
 import { NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';

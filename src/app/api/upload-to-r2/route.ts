@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 // API route to upload all local images to R2
 import { NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';

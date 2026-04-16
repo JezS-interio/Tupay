@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server';
 import { createUserProfile, userProfileExists } from '@/lib/firebase/users';
 import { CreateUserProfileData } from '@/types/user';
