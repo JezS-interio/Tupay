@@ -1,0 +1,12 @@
+Selector: div[role='listitem']
+Count: 24
+
+Element 1:
+<a jsname="pxBnId" class="C6AK7c" href="/search?sca_esv=b306c554b4eb75d4&amp;hl=en&amp;q=iPhone+15+Pro+Max+smartphone+product+image&amp;source=lnms&amp;fbs=ADc_l-YQanUcJSoe62luYRIM6gsUt2zjmW_MvZe6pHkY
+
+Element 2:
+<a class="C6AK7c" aria-disabled="true" role="link" tabindex="0" data-hveid="CAoQAQ" data-ved="2ahUKEwi2n5KnhYuSAxXmHbkGHTUwC4kQ850MegQIChAB"><div jsname="xBNgKe" aria-current="page" selected="" class=
+
+Element 3:
+<a jsname="pxBnId" class="C6AK7c" href="/search?sca_esv=b306c554b4eb75d4&amp;hl=en&amp;udm=28&amp;fbs=ADc_l-YQanUcJSoe62luYRIM6gsUt2zjmW_MvZe6pHkYHWOdy8woxLkmF_YUe3IvdgohA_8v3TsiD84hBql4N0xjnXxRk_JrWw
+

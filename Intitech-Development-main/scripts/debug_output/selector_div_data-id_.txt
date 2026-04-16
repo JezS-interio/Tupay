@@ -1,0 +1,12 @@
+Selector: div[data-id]
+Count: 3
+
+Element 1:
+<div class="PHj8of J1AhHd"><span jscontroller="Zby8rf" data-ad="200ms" data-ae="cubic-bezier(.2,0,0,1)" data-cls="b53XLe" data-level="2" data-mode="4" jsaction="rcuQ6b:npT2md;MDuPYe:pcqARd"><div jsnam
+
+Element 2:
+<div jscontroller="XW992c" jsmodel="sFFyCd" class="wIjY0d jFk0f" jsdata="JDto1e;_;Xo1nabb4M-a75OUPteCsyAg58" jsaction="rcuQ6b:npT2md" data-hveid="CDIQAA"><div jsname="dTDiAc" class="eA0Zlc PZPZlf Wghb
+
+Element 3:
+
+

@@ -1,0 +1,12 @@
+Selector: a[jsname]
+Count: 31
+
+Element 1:
+Skip to main content
+
+Element 2:
+Turn off continuous scrolling
+
+Element 3:
+Turn on continuous scrolling
+
