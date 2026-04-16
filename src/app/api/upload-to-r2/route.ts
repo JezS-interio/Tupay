@@ -18,16 +18,7 @@ function getContentType(filePath: string): string {
   return types[ext || ''] || 'application/octet-stream';
 }
 
-// Initialize R2 client
-const r2Client = new S3Client({
-  region: 'auto',
-  endpoint: process.env.R2_ENDPOINT!,
-  credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-  },
-});
-
+// R2 client is initialized inside the handler to avoid build-time errors
 const BUCKET_NAME = process.env.R2_BUCKET_NAME!;
 const PUBLIC_URL = process.env.R2_PUBLIC_URL!;
 
@@ -60,6 +51,14 @@ async function getAllImageFiles(dir: string, baseDir: string = dir): Promise<str
 }
 
 export async function POST() {
+  const r2Client = new S3Client({
+    region: 'auto',
+    endpoint: process.env.R2_ENDPOINT!,
+    credentials: {
+      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    },
+  });
   const results = {
     success: 0,
     failed: 0,

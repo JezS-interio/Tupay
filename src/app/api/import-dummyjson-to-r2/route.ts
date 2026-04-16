@@ -28,16 +28,6 @@ const CATEGORIES_TO_FETCH = [
   'mobile-accessories'
 ];
 
-// Initialize R2 client
-const s3Client = new S3Client({
-  region: 'auto',
-  endpoint: process.env.R2_ENDPOINT,
-  credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-  },
-});
-
 const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL || 'https://pub-2abf1fca1a994517beb3fb17c83b3094.r2.dev';
 const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME || 'intitech-products';
 
@@ -138,6 +128,14 @@ function transformToFirestoreProduct(dummyProduct: DummyJSONProduct, r2Thumbnail
 }
 
 export async function POST() {
+  const s3Client = new S3Client({
+    region: 'auto',
+    endpoint: process.env.R2_ENDPOINT,
+    credentials: {
+      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    },
+  });
   try {
     const logs: string[] = [];
 
