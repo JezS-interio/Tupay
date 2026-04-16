@@ -1,12 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import { selectCartItems, selectTotalPrice, removeAllItemsFromCart } from "@/redux/features/cart-slice";
 import { deleteAbandonedCart } from "@/lib/firebase/abandoned-carts";
-import { createOrder } from "@/lib/firebase/orders";
-import { ShippingAddress } from "@/types/order";
 import toast from "react-hot-toast";
 import Breadcrumb from "../Common/Breadcrumb";
 import Login from "./Login";
@@ -17,7 +14,6 @@ import Coupon from "./Coupon";
 import Billing from "./Billing";
 
 const Pagar = () => {
-  const router = useRouter();
   const dispatch = useDispatch();
   const { user } = useAuth();
   const cartItems = useSelector(selectCartItems);
@@ -47,16 +43,22 @@ const Pagar = () => {
       // Extract form data
       const formData = new FormData(e.target as HTMLFormElement);
 
-      const shippingAddress: ShippingAddress = {
-        fullName: `${formData.get('firstName')} ${formData.get('lastName')}`,
-        email: formData.get('email') as string || user.email || '',
-        phone: formData.get('phone') as string || '',
-        address: formData.get('address') as string || '',
-        city: formData.get('town') as string || '',
-        state: formData.get('country') as string || '',
-        zipCode: '',
-        country: formData.get('countryName') as string || 'USA',
-      };
+      const firstName = formData.get('firstName') as string || '';
+      const lastName = formData.get('lastName') as string || '';
+      const email = formData.get('email') as string || user.email || '';
+      const phone = formData.get('phone') as string || '';
+      const document = formData.get('document') as string || '';
+      const documentType = formData.get('documentType') as string || 'DNI';
+      const address = formData.get('address') as string || '';
+      const town = formData.get('town') as string || '';
+      const country = formData.get('country') as string || '';
+      const notes = formData.get('notes') as string || '';
+
+      if (!document) {
+        toast.error('Por favor ingresa tu número de documento');
+        setLoading(false);
+        return;
+      }
 
       // Prepare order items
       const orderItems = cartItems.map((item) => ({
@@ -68,48 +70,36 @@ const Pagar = () => {
         img: item.imgs?.previews?.[0] || item.imgs?.thumbnails?.[0],
       }));
 
-      // Create order in Firestore
-      const orderId = await createOrder({
-        userId: user.uid,
-        userEmail: user.email || '',
-        userName: user.displayName || user.email?.split('@')[0] || 'Customer',
-        items: orderItems,
-        subtotal: cartTotal,
-        shipping: shippingFee,
-        tax: tax,
-        total: total,
-        shippingAddress,
-        orderStatus: 'pending',
-        paymentStatus: 'pending',
-        paymentMethod: 'Cash on Delivery', // Default for now
-        notes: formData.get('notes') as string || '',
-      });
-
-      // Send order confirmation email
-      const emailResponse = await fetch('/api/send-order-confirmation', {
+      // Call Tupay create-deposit API (creates order in Firestore + initiates payment)
+      const response = await fetch('/api/tupay/create-deposit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: shippingAddress.email,
-          userName: shippingAddress.fullName,
-          orderNumber: orderId,
-          orderDate: new Date().toLocaleDateString(),
-          items: orderItems.map(item => ({
-            name: item.title,
-            quantity: item.quantity,
-            price: item.discountedPrice,
-            image: item.img,
-          })),
+          userId: user.uid,
+          userEmail: user.email || '',
+          userName: user.displayName || user.email?.split('@')[0] || 'Customer',
+          firstName,
+          lastName,
+          email,
+          phone,
+          document,
+          documentType,
+          address,
+          city: town,
+          state: country,
+          notes,
+          items: orderItems,
           subtotal: cartTotal,
           shipping: shippingFee,
-          total: total,
-          shippingAddress,
+          tax,
+          total,
         }),
       });
 
-      if (!emailResponse.ok) {
-        console.error('Failed to send order confirmation email');
-        // Don't block checkout if email fails
+      const data = await response.json();
+
+      if (!response.ok || !data.redirect_url) {
+        throw new Error(data.error || 'Error al iniciar el pago');
       }
 
       // Delete abandoned cart record
@@ -117,16 +107,12 @@ const Pagar = () => {
         await deleteAbandonedCart(user.email);
       }
 
-      // Clear cart
+      // Clear cart and redirect to Tupay payment page
       dispatch(removeAllItemsFromCart());
-
-      toast.success(`Order #${orderId} placed successfully! Check your email for confirmation.`);
-
-      // Redirect to home
-      router.push('/');
+      window.location.href = data.redirect_url;
     } catch (error) {
       console.error('Pagar error:', error);
-      toast.error('Failed to process order. Please try again.');
+      toast.error(error instanceof Error ? error.message : 'Error al procesar el pedido. Intenta nuevamente.');
     } finally {
       setLoading(false);
     }
